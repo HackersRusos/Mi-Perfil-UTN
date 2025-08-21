@@ -4,7 +4,16 @@
         @include('partials.head')
     </head>
     <body class="min-h-screen flex bg-white dark:bg-zinc-800">
-        
+        @php
+            $u = auth()->user();
+            $homeRoute = route('home');
+            if ($u) {
+                if ($u->hasAnyRole('admin','3'))      $homeRoute = route('admin.dashboard');
+                elseif ($u->hasAnyRole('profesor','2')) $homeRoute = route('profesor.dashboard');
+                elseif ($u->hasAnyRole('estudiante','1')) $homeRoute = route('dashboard');
+            }
+        @endphp
+
         <!-- Sidebar -->
         <flux:sidebar sticky stashable 
             class="h-screen border-e border-zinc-200 bg-zinc-50 
@@ -12,27 +21,42 @@
 
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-            <a href="{{ route('dashboard') }}" 
+            <a href="{{ $homeRoute }}" 
                class="me-5 flex items-center space-x-2 rtl:space-x-reverse p-4" 
                wire:navigate>
                 <x-app-logo />
             </a>
 
             <flux:navlist.group heading="Navegación" class="grid">
+                {{-- Estudiante (rol 1) --}}
+                @role('estudiante','1')
                 <flux:navlist.item icon="home"
                     :href="route('dashboard')"
                     :current="request()->routeIs('dashboard')"
                     wire:navigate>
                     Mi Perfil
                 </flux:navlist.item>
-            
-                {{-- NUEVO: Vista de Profesor --}}
+                @endrole
+
+                {{-- Profesor (rol 2) --}}
+                @role('profesor','2')
                 <flux:navlist.item icon="users"
                     :href="route('profesor.dashboard')"
                     :current="request()->routeIs('profesor*')"
                     wire:navigate>
                     Estudiantes
                 </flux:navlist.item>
+                @endrole
+
+                {{-- Admin (rol 3) --}}
+                @role('admin','3')
+                <flux:navlist.item icon="users"
+                    :href="route('admin.dashboard')"
+                    :current="request()->routeIs('admin*')"
+                    wire:navigate>
+                    Gestión de Usuarios
+                </flux:navlist.item>
+                @endrole
             </flux:navlist.group>
 
             <flux:spacer />
