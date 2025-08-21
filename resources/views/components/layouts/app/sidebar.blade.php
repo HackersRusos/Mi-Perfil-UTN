@@ -11,10 +11,10 @@
 
             <flux:navlist.group heading="Navegación" class="grid">
                 <flux:navlist.item icon="home"
-                    :href="route('dashboard')"
+                    :href="route('estudiante.dashboard')"
                     :current="request()->routeIs('dashboard')"
                     wire:navigate>
-                    Panel
+                    Mi Perfil
                 </flux:navlist.item>
             
                 {{-- NUEVO: Vista de Profesor --}}

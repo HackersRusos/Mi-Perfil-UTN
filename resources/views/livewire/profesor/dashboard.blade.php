@@ -1,5 +1,18 @@
 <?php
+
+use Livewire\Volt\Component;
+use App\Models\Profile;
 use function Livewire\Volt\layout;
+
+new class extends Component {
+    public $profiles;
+
+    public function mount(): void
+    {
+        // Traer todos los perfiles con el user relacionado
+        $this->profiles = Profile::with('user')->get();
+    }
+};
 
 layout('components.layouts.app');
 ?>
@@ -16,47 +29,26 @@ layout('components.layouts.app');
     <!-- Estadísticas -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="bg-white dark:bg-zinc-800 shadow rounded-xl p-4 text-center">
-            <div class="text-3xl font-bold">2</div>
+            <div class="text-3xl font-bold">{{ $profiles->count() }}</div>
             <div class="text-sm text-gray-500">Total Estudiantes</div>
         </div>
         <div class="bg-white dark:bg-zinc-800 shadow rounded-xl p-4 text-center">
-            <div class="text-3xl font-bold text-blue-500">2</div>
-            <div class="text-sm text-gray-500">Tecnicaturas</div>
+            <div class="text-3xl font-bold text-blue-500">
+                {{ $profiles->whereNotNull('carrera')->count() }}
+            </div>
+            <div class="text-sm text-gray-500">Con Carrera</div>
         </div>
         <div class="bg-white dark:bg-zinc-800 shadow rounded-xl p-4 text-center">
-            <div class="text-3xl font-bold text-green-500">0</div>
-            <div class="text-sm text-gray-500">Licenciaturas</div>
-        </div>
-        <div class="bg-white dark:bg-zinc-800 shadow rounded-xl p-4 text-center">
-            <div class="text-3xl font-bold text-orange-500">0</div>
+            <div class="text-3xl font-bold text-orange-500">
+                {{ $profiles->whereNull('carrera')->count() }}
+            </div>
             <div class="text-sm text-gray-500">Sin Carrera</div>
-        </div>
-    </div>
-
-    <!-- Filtros -->
-    <div class="bg-white dark:bg-zinc-800 shadow rounded-xl p-4">
-        <h2 class="font-semibold mb-4">Filtros de Búsqueda</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input type="text" placeholder="Buscar por nombre, apellido, email o DNI..." 
-                class="w-full rounded-lg border-gray-300 dark:border-zinc-700 dark:bg-zinc-900" />
-
-            <select class="w-full rounded-lg border-gray-300 dark:border-zinc-700 dark:bg-zinc-900">
-                <option>Todas las carreras</option>
-                <option>Programación</option>
-                <option>Ingeniería Mecánica</option>
-            </select>
-
-            <select class="w-full rounded-lg border-gray-300 dark:border-zinc-700 dark:bg-zinc-900">
-                <option>Todas las comisiones</option>
-                <option>2.1</option>
-                <option>3.1</option>
-            </select>
         </div>
     </div>
 
     <!-- Tabla Estudiantes -->
     <div class="bg-white dark:bg-zinc-800 shadow rounded-xl p-4">
-        <h2 class="font-semibold mb-4">Estudiantes (3)</h2>
+        <h2 class="font-semibold mb-4">Estudiantes ({{ $profiles->count() }})</h2>
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead class="text-sm text-gray-500 border-b dark:border-zinc-700">
@@ -70,54 +62,51 @@ layout('components.layouts.app');
                     </tr>
                 </thead>
                 <tbody class="divide-y dark:divide-zinc-700">
-                    <tr>
-                        <td class="p-2">
-                            <div class="flex items-center gap-2">
-                                <span class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-700">LC</span>
-                                <div>
-                                    <div class="font-semibold">Lorena Caballero</div>
-                                    <div class="text-sm text-gray-500">180pasteleria@gmail.com</div>
+                    @foreach ($profiles as $p)
+                        <tr>
+                            <td class="p-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-700">
+                                        {{ strtoupper(substr($p->nombre,0,1).substr($p->apellido,0,1)) }}
+                                    </span>
+                                    <div>
+                                        <div class="font-semibold">
+                                            {{ $p->nombre }} {{ $p->apellido }}
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            {{ $p->user->email ?? '-' }}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
-                        <td class="p-2">38823149</td>
-                        <td class="p-2">
-                            <span class="px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs font-medium">EN PROGRAMACION</span>
-                        </td>
-                        <td class="p-2">2.1</td>
-                        <td class="p-2">
-                            <div class="text-sm">180pasteleria@gmail.com</div>
-                            <div class="text-sm">370429791</div>
-                        </td>
-                        <td class="p-2 flex gap-2">
-                            <a href="#" class="px-3 py-1 bg-gray-100 rounded-lg text-sm hover:bg-gray-200">👁 Ver Perfil</a>
-                            <a href="https://wa.me/54370429791" target="_blank" class="px-3 py-1 bg-green-100 rounded-lg text-sm hover:bg-green-200">💬 WhatsApp</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-2">
-                            <div class="flex items-center gap-2">
-                                <span class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-700">SG</span>
-                                <div>
-                                    <div class="font-semibold">Santiago Gines</div>
-                                    <div class="text-sm text-gray-500">gustavogines2014@gmail.com</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="p-2">43455758</td>
-                        <td class="p-2">
-                            <span class="px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs font-medium">EN PROGRAMACION</span>
-                        </td>
-                        <td class="p-2">2.1</td>
-                        <td class="p-2">
-                            <div class="text-sm">gustavogines2014@gmail.com</div>
-                            <div class="text-sm">3704889655</div>
-                        </td>
-                        <td class="p-2 flex gap-2">
-                            <a href="#" class="px-3 py-1 bg-gray-100 rounded-lg text-sm hover:bg-gray-200">👁 Ver Perfil</a>
-                            <a href="https://wa.me/543704889655" target="_blank" class="px-3 py-1 bg-green-100 rounded-lg text-sm hover:bg-green-200">💬 WhatsApp</a>
-                        </td>
-                    </tr>
+                            </td>
+                            <td class="p-2">{{ $p->dni ?? '-' }}</td>
+                            <td class="p-2">
+                                @if ($p->carrera)
+                                    <span class="px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs font-medium">
+                                        {{ $p->carrera }}
+                                    </span>
+                                @else
+                                    -
+                                @endif
+                            </td>
+                            <td class="p-2">{{ $p->comision ?? '-' }}</td>
+                            <td class="p-2">
+                                <div class="text-sm">{{ $p->user->email ?? '-' }}</div>
+                                <div class="text-sm">{{ $p->telefono ?? '-' }}</div>
+                            </td>
+                            <td class="p-2 flex gap-2">
+                                <a href="{{ route('estudiantes.show', $p) }}" 
+                                   class="px-3 py-1 bg-gray-100 rounded-lg text-sm hover:bg-gray-200">
+                                   👁 Ver Perfil
+                                </a>
+
+                                @if ($p->telefono)
+                                    <a href="https://wa.me/54{{ ltrim($p->telefono,'0') }}" target="_blank"
+                                       class="px-3 py-1 bg-green-100 rounded-lg text-sm hover:bg-green-200">💬 WhatsApp</a>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>

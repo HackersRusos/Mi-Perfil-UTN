@@ -75,4 +75,16 @@ class User extends Authenticatable
     {
         return $this->hasOne(\App\Models\Profile::class);
     }
+
+    public function hasAnyRole(string ...$roles): bool
+    {
+        $name = $this->role?->name;
+        $id   = (string) $this->role_id;
+    
+        // acepta nombre o id como string
+        foreach ($roles as $r) {
+            if ($name === $r || $id === $r) return true;
+        }
+        return false;
+    }
 }

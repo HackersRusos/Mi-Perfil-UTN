@@ -2,20 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
-use App\Http\Livewire\Auth\Register;
+use App\Models\Profile;
 
+// Página de inicio
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// Rutas Livewire Volt
-Volt::route('register', 'auth.register');          // Registro
-Volt::route('login', 'auth.login');                // Login agregado
+// 🔐 Autenticación básica (Volt)
+Volt::route('register', 'auth.register')->name('register');
+Volt::route('login', 'auth.login')->name('login');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-
+// ⚙️ Configuración (solo usuarios logueados)
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
@@ -23,9 +21,20 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
-Volt::route('profesor', 'profesor.dashboard')   // URL: /profesor
-    ->middleware(['auth','verified'])           // por ahora solo auth/verified
+
+// 👨‍🏫 Dashboard Profesor
+Volt::route('profesor', 'profesor.dashboard')
+    ->middleware(['auth', 'verified'])
     ->name('profesor.dashboard');
 
+// 🎓 Dashboard Estudiante (su propio perfil)
+Volt::route('dashboard', 'estudiante.dashboard')
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+// 👀 Vista de perfil de un estudiante (para profesores u otros)
+Volt::route('/estudiantes/{profile}', 'estudiante.dashboard')
+    ->middleware(['auth','verified'])
+    ->name('estudiantes.show');
 
 require __DIR__.'/auth.php';
