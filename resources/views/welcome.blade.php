@@ -17,12 +17,12 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
             <a class="navbar-brand" href="#">
-                <img src="images/UTN_FRRE.png" alt="UTN FRRe Logo" class="img-fluid">
+                <img src="{{ asset('images/UTN_FRRE.png') }}" alt="UTN FRRe Logo" class="img-fluid">
                 <p>Extension Formosa</p>
             </a>
             <div class="ml-auto">
-                <a href="#" class="btn btn-outline-primary me-2">Iniciar Sesión</a>
-                <a href="#" class="btn btn-primary">Registrarse</a>
+                <a href="{{ route('login') }}" class="btn btn-outline-primary me-2">Iniciar Sesión</a>
+                <a href="{{ route('register') }}" class="btn btn-primary">Registrarse</a>
             </div>
         </div>
     </nav>
@@ -33,50 +33,65 @@
             <div class="col-md-8 text-center">
                 <h1>Mi Perfil UTN</h1>
                 <p class="fs-5 text-muted mb-4">Sistema de gestión de perfiles estudiantiles</p>
-                <p class="text-center fs-6 mb-5">Plataforma integral para estudiantes, profesores y administradores de la Universidad Tecnológica Nacional - Facultad Regional Resistencia - Extensión Formosa</p>
+                <p class="text-center fs-6 mb-5">
+                    Plataforma integral para estudiantes, profesores y administradores de la 
+                    Universidad Tecnológica Nacional - Facultad Regional Resistencia - Extensión Formosa
+                </p>
                 
                 <!-- Imagen Principal -->
                 <div class="mb-5">
-                    <img src="images/IPP--696x464.jpg" class="img-fluid rounded shadow-sm" alt="Edificio UTN">
+                    <img src="{{ asset('images/IPP--696x464.jpg') }}" class="img-fluid rounded shadow-sm" alt="Edificio UTN">
                 </div>
 
                 <!-- Tarjetas de Funcionalidades -->
                 <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
                     <div class="col">
-                        <div class="card h-100 text-center">
-                            <div class="card-body">
-                            <img src="{{ asset('images/student-cap.svg') }}" alt="Student Cap" 
-                                class="img-fluid mx-auto d-block " style="max-width: 35px;">
-                                <h5>Estudiantes</h5>
-                                <p>Gestiona tu perfil académico, información personal y datos de contacto</p>
+                        <a href="{{ route('login') }}" class="text-decoration-none text-dark">
+                            <div class="card h-100 text-center">
+                                <div class="card-body position-relative">
+                                    <img src="{{ asset('images/student-cap.svg') }}" alt="Estudiantes" 
+                                         class="img-fluid mx-auto d-block" style="max-width: 35px;">
+                                    <h5>Estudiantes</h5>
+                                    <p>Gestiona tu perfil académico, información personal y datos de contacto</p>
+                                    <span class="stretched-link"></span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
+                
                     <div class="col">
-                        <div class="card h-100 text-center">
-                            <div class="card-body">
-                            <img src="{{ asset('images/profesors.svg') }}" alt="Student Cap" 
-                                class="img-fluid mx-auto d-block " style="max-width: 35px;">
-                                <h5>Profesores</h5>
-                                <p>Accede al listado completo de estudiantes por comisión y carrera</p>
+                        <a href="{{ route('login') }}" class="text-decoration-none text-dark">
+                            <div class="card h-100 text-center">
+                                <div class="card-body position-relative">
+                                    <img src="{{ asset('images/profesors.svg') }}" alt="Profesores" 
+                                         class="img-fluid mx-auto d-block" style="max-width: 35px;">
+                                    <h5>Profesores</h5>
+                                    <p>Accede al listado completo de estudiantes por comisión y carrera</p>
+                                    <span class="stretched-link"></span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
+                
                     <div class="col">
-                        <div class="card h-100 text-center">
-                            <div class="card-body">
-                            <img src="{{ asset('images/admin.svg') }}" alt="Student Cap" 
-                                class="img-fluid mx-auto d-block " style="max-width: 35px;">
-                                <h5>Administradores</h5>
-                                <p>Control total de permisos y gestión de usuarios del sistema</p>
+                        <a href="{{ route('login') }}" class="text-decoration-none text-dark">
+                            <div class="card h-100 text-center">
+                                <div class="card-body position-relative">
+                                    <img src="{{ asset('images/admin.svg') }}" alt="Administradores" 
+                                         class="img-fluid mx-auto d-block" style="max-width: 35px;">
+                                    <h5>Administradores</h5>
+                                    <p>Control total de permisos y gestión de usuarios del sistema</p>
+                                    <span class="stretched-link"></span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 </div>
 
+
                 <!-- Botón de Acción -->
                 <div class="mt-5 text-center">
-                    <a href="#" class="btn btn-primary px-5">Comenzar Ahora</a>
+                    <a href="{{ route('register') }}" class="btn btn-primary px-5">Comenzar Ahora</a>
                 </div>
             </div>
         </div>
