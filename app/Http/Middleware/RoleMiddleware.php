@@ -19,18 +19,25 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, ...$roles)
     {
         $user = $request->user();
-
+    
         if (!$user) {
-            return redirect()->route('login');
+            return $request->expectsJson()
+                ? abort(401, 'No autenticado')
+                : redirect()->route('login');
         }
-
-        // Acepta uno o varios roles: role:admin,profesor
-        foreach ($roles as $role) {
-            if ($user->hasRole($role)) {
-                return $next($request);
-            }
+    
+        // Normalizar roles (separar por coma si vinieron en una sola cadena)
+        if (count($roles) === 1 && str_contains($roles[0], ',')) {
+            $roles = explode(',', $roles[0]);
         }
-
-        abort(403, 'Acceso denegado');
+    
+        if ($user->hasAnyRole(...$roles)) {
+            return $next($request);
+        }
+    
+        return $request->expectsJson()
+            ? abort(403, 'Acceso denegado')
+            : abort(403, 'Acceso denegado'); // o redirect a vista de "sin permisos"
     }
+
 }
