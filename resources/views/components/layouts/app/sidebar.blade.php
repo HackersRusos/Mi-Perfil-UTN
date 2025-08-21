@@ -11,11 +11,23 @@
                 <x-app-logo />
             </a>
 
-            <flux:navlist variant="outline">
-                <flux:navlist.group :heading="__('Platform')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-                </flux:navlist.group>
-            </flux:navlist>
+            <flux:navlist.group heading="Navegación" class="grid">
+                <flux:navlist.item icon="home"
+                    :href="route('dashboard')"
+                    :current="request()->routeIs('dashboard')"
+                    wire:navigate>
+                    Panel
+                </flux:navlist.item>
+            
+                {{-- NUEVO: Vista de Profesor --}}
+                <flux:navlist.item icon="users"
+                    :href="route('profesor.dashboard')"
+                    :current="request()->routeIs('profesor*')"
+                    wire:navigate>
+                    Estudiantes
+                </flux:navlist.item>
+            </flux:navlist.group>
+
 
             <flux:spacer />
 

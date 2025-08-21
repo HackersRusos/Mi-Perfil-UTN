@@ -18,5 +18,9 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
+Volt::route('profesor', 'profesor.dashboard')   // URL: /profesor
+    ->middleware(['auth','verified'])           // por ahora solo auth/verified
+    ->name('profesor.dashboard');
+
 
 require __DIR__.'/auth.php';
