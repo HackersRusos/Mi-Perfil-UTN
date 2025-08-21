@@ -2,10 +2,15 @@
 
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use App\Http\Livewire\Auth\Register;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+// Rutas Livewire Volt
+Volt::route('register', 'auth.register');          // Registro
+Volt::route('login', 'auth.login');                // Login agregado
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

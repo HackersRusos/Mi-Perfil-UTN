@@ -1,3 +1,4 @@
+
 <?php
 
 use App\Models\User;
@@ -33,7 +34,14 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         $this->redirectIntended(route('dashboard', absolute: false), navigate: true);
     }
-}; ?>
+};
+
+?>
+
+<div class="min-h-screen flex flex-col justify-center items-center bg-gray-100 p-4">
+
+    <!-- Contenedor principal -->
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
 
 <div class="min-h-screen flex flex-col justify-center items-center bg-slate-900">
     <div class="w-full max-w-md sm:max-w-xl md:max-w-3xl bg-slate-800 rounded-lg shadow-lg p-8">
