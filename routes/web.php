@@ -23,7 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // 🛡️ Admin (ruta creada; vista/volt se hará luego)
-Volt::route('admin', 'admin.dashboard')
+Volt::route('admin/dashboard', 'admin.dashboard')
     ->middleware(['auth', 'verified', 'role:admin'])
     ->name('admin.dashboard');
 

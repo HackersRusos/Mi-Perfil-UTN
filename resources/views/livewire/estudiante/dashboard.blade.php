@@ -24,39 +24,35 @@ new class extends Component {
     public $foto; // archivo subido
     public ?Profile $profile = null;
 
-    public function mount(?Profile $profile = null): void
+    public function mount(?\App\Models\Profile $profile = null): void
     {
-        // Si viene un perfil por la ruta (profesor/admin viendo a un estudiante)
         if ($profile) {
+            \Illuminate\Support\Facades\Gate::authorize('view', $profile);
             $this->profile = $profile;
-            // Autorización de vista por si la ruta no trae 'can:view,profile'
-            Gate::authorize('view', $this->profile);
-            $this->email = $profile->user->email;
+            $this->email   = $profile->user->email;
         } else {
-            // Caso normal: estudiante autenticado ve su propio perfil
-            $user = auth()->user();
-            $this->profile = $user->profile;
-            $this->email   = $user->email;
-            if ($this->profile) {
-                Gate::authorize('view', $this->profile);
-            }
+            $u = auth()->user();
+            $this->profile = $u->profile;   // puede ser null
+            $this->email   = $u->email;
+            // No Gate::authorize aquí
         }
-
-        if ($this->profile) {
-            $this->nombre   = $this->profile->nombre;
-            $this->apellido = $this->profile->apellido;
-            $this->dni      = $this->profile->dni;
-            $this->telefono = $this->profile->telefono;
-            $this->carrera  = $this->profile->carrera;
-            $this->comision = $this->profile->comision;
-
-            $links = $this->profile->social_links ?? [];
-            $this->instagram = $links['instagram'] ?? null;
-            $this->facebook  = $links['facebook']  ?? null;
-            $this->linkedin  = $links['linkedin']  ?? null;
-            $this->web       = $links['web']       ?? null;
-        }
+    
+        $p = $this->profile;
+        $this->nombre   = $p->nombre   ?? null;
+        $this->apellido = $p->apellido ?? null;
+        $this->dni      = $p->dni      ?? null;
+        $this->telefono = $p->telefono ?? null;
+        $this->carrera  = $p->carrera  ?? null;
+        $this->comision = $p->comision ?? null;
+    
+        $links = $p->social_links ?? [];
+        $this->instagram = $links['instagram'] ?? null;
+        $this->facebook  = $links['facebook']  ?? null;
+        $this->linkedin  = $links['linkedin']  ?? null;
+        $this->web       = $links['web']       ?? null;
     }
+
+
 
     public function rules(): array
     {
