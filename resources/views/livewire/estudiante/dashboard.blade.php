@@ -2,9 +2,9 @@
 
 use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Gate;
 use App\Models\Profile;
 use function Livewire\Volt\layout;
-
 
 new class extends Component {
     use WithFileUploads;
@@ -24,34 +24,35 @@ new class extends Component {
     public $foto; // archivo subido
     public ?Profile $profile = null;
 
-    public function mount(?Profile $profile = null): void
-{
-    // Si viene un perfil por la ruta (ej: profesor ve a un estudiante)
-    if ($profile) {
-        $this->profile = $profile;
-        $this->email   = $profile->user->email;
-    } else {
-        // Caso normal: el estudiante autenticado ve su perfil
-        $user = auth()->user();
-        $this->email   = $user->email;
-        $this->profile = $user->profile;
-    }
-
-    if ($this->profile) {
-        $this->nombre   = $this->profile->nombre;
-        $this->apellido = $this->profile->apellido;
-        $this->dni      = $this->profile->dni;
-        $this->telefono = $this->profile->telefono;
-        $this->carrera  = $this->profile->carrera;
-        $this->comision = $this->profile->comision;
-
-        $links = $this->profile->social_links ?? [];
+    public function mount(?\App\Models\Profile $profile = null): void
+    {
+        if ($profile) {
+            \Illuminate\Support\Facades\Gate::authorize('view', $profile);
+            $this->profile = $profile;
+            $this->email   = $profile->user->email;
+        } else {
+            $u = auth()->user();
+            $this->profile = $u->profile;   // puede ser null
+            $this->email   = $u->email;
+            // No Gate::authorize aquí
+        }
+    
+        $p = $this->profile;
+        $this->nombre   = $p->nombre   ?? null;
+        $this->apellido = $p->apellido ?? null;
+        $this->dni      = $p->dni      ?? null;
+        $this->telefono = $p->telefono ?? null;
+        $this->carrera  = $p->carrera  ?? null;
+        $this->comision = $p->comision ?? null;
+    
+        $links = $p->social_links ?? [];
         $this->instagram = $links['instagram'] ?? null;
         $this->facebook  = $links['facebook']  ?? null;
         $this->linkedin  = $links['linkedin']  ?? null;
         $this->web       = $links['web']       ?? null;
     }
-}
+
+
 
     public function rules(): array
     {
@@ -74,8 +75,26 @@ new class extends Component {
         ];
     }
 
+    /** Botón Editar: chequea permiso antes de habilitar edición */
+    public function startEditing(): void
+    {
+        Gate::authorize('update', $this->profile);
+        $this->editing = true;
+    }
+
+    /** Guardia extra: impedir que seteen editing=true sin permiso */
+    public function updatingEditing($value): void
+    {
+        if ($value && Gate::denies('update', $this->profile)) {
+            $this->editing = false;
+        }
+    }
+
     public function save(): void
     {
+        // Solo el dueño (estudiante) puede actualizar
+        Gate::authorize('update', $this->profile);
+
         $this->validate();
 
         $user = auth()->user();
@@ -86,7 +105,7 @@ new class extends Component {
             $path = $this->foto->store('profiles', 'public');
         }
 
-        // Crear/actualizar recién acá
+        // Crear/actualizar solo el propio perfil del usuario autenticado
         $this->profile = Profile::updateOrCreate(
             ['user_id' => $user->id],
             [
@@ -124,82 +143,86 @@ new class extends Component {
         return "https://wa.me/{$digits}";
     }
 };
+
 layout('components.layouts.app');
 ?>
 
-    <div class="flex flex-col gap-6 p-6">
-        {{-- Encabezado --}}
-        <div class="bg-white dark:bg-zinc-800 rounded-xl shadow p-6 flex items-center gap-6 border border-neutral-200 dark:border-neutral-700">
-            @php
-                $avatar = $profile?->foto_path ? asset('storage/'.$profile->foto_path) : null;
-                $ini = strtoupper(
-                    mb_substr(($nombre ?: auth()->user()->name), 0, 1) .
-                    mb_substr(($apellido ?: ''), 0, 1)
-                );
-            @endphp
+<div class="flex flex-col gap-6 p-6">
+    {{-- Encabezado --}}
+    <div class="bg-white dark:bg-zinc-800 rounded-xl shadow p-6 flex items-center gap-6 border border-neutral-200 dark:border-neutral-700">
+        @php
+            $avatar = $profile?->foto_path ? asset('storage/'.$profile->foto_path) : null;
+            $ini = strtoupper(
+                mb_substr(($nombre ?: auth()->user()->name), 0, 1) .
+                mb_substr(($apellido ?: ''), 0, 1)
+            );
+        @endphp
 
-            <div class="relative">
-                @if ($avatar)
-                    <img src="{{ $avatar }}" alt="Foto" class="w-20 h-20 rounded-full object-cover border">
-                @else
-                    <div class="flex items-center justify-center w-20 h-20 rounded-full bg-neutral-200 text-xl font-bold text-gray-700">
-                        {{ $ini }}
-                    </div>
-                @endif
-            </div>
-
-            <div class="flex-1">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-                    {{ $nombre ?: '-' }} {{ $apellido ?: '' }}
-                </h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                    {{ $carrera ?: 'Carrera no asignada' }}
-                </p>
-                <div class="flex gap-2 mt-2">
-                    <span class="px-3 py-1 rounded-lg text-xs font-medium bg-blue-100 text-blue-700">Estudiante UTN</span>
-                    <span class="px-3 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-700">Comisión {{ $comision ?: 'N/A' }}</span>
+        <div class="relative">
+            @if ($avatar)
+                <img src="{{ $avatar }}" alt="Foto" class="w-20 h-20 rounded-full object-cover border">
+            @else
+                <div class="flex items-center justify-center w-20 h-20 rounded-full bg-neutral-200 text-xl font-bold text-gray-700">
+                    {{ $ini }}
                 </div>
-            </div>
+            @endif
+        </div>
 
-            <div class="hidden md:block">
-                @if ($editing)
-                    <button wire:click="save" class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white">Guardar</button>
-                @else
-                    <button wire:click="$set('editing', true)" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white">Editar</button>
-                @endif
+        <div class="flex-1">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+                {{ $nombre ?: '-' }} {{ $apellido ?: '' }}
+            </h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                {{ $carrera ?: 'Carrera no asignada' }}
+            </p>
+            <div class="flex gap-2 mt-2">
+                <span class="px-3 py-1 rounded-lg text-xs font-medium bg-blue-100 text-blue-700">Estudiante UTN</span>
+                <span class="px-3 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-700">Comisión {{ $comision ?: 'N/A' }}</span>
             </div>
         </div>
 
-        {{-- Alertas --}}
-        @if (session('success'))
-            <div class="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-800 dark:border-green-800 dark:bg-green-900/30 dark:text-green-200">
-                {{ session('success') }}
-            </div>
-        @endif
+        <div class="hidden md:block">
+            @if ($editing)
+                <button wire:click="save" class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white">Guardar</button>
+            @else
+                @can('update', $profile)
+                    <button wire:click="startEditing" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white">Editar</button>
+                @endcan
+            @endif
+        </div>
+    </div>
 
-        {{-- Información --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {{-- Personal --}}
-            <div class="bg-white dark:bg-zinc-800 rounded-xl shadow p-6 border border-neutral-200 dark:border-neutral-700">
-                <h3 class="text-lg font-semibold mb-4">Información Personal</h3>
+    {{-- Alertas --}}
+    @if (session('success'))
+        <div class="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-800 dark:border-green-800 dark:bg-green-900/30 dark:text-green-200">
+            {{ session('success') }}
+        </div>
+    @endif
 
-                @if (!$editing)
-                    <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-2">
-                        <li><strong>Nombre:</strong> {{ $nombre ?: '-' }}</li>
-                        <li><strong>Apellido:</strong> {{ $apellido ?: '-' }}</li>
-                        <li><strong>DNI:</strong> {{ $dni ?: '-' }}</li>
-                        <li><strong>Teléfono:</strong>
-                            @if ($telefono)
-                                <a href="{{ $this->whatsappUrl() }}" target="_blank" class="text-blue-600 underline">
-                                    {{ $telefono }} (WhatsApp)
-                                </a>
-                            @else
-                                -
-                            @endif
-                        </li>
-                        <li><strong>Email:</strong> {{ $email }}</li>
-                    </ul>
-                @else
+    {{-- Información --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {{-- Personal --}}
+        <div class="bg-white dark:bg-zinc-800 rounded-xl shadow p-6 border border-neutral-200 dark:border-neutral-700">
+            <h3 class="text-lg font-semibold mb-4">Información Personal</h3>
+
+            @if (!$editing)
+                <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-2">
+                    <li><strong>Nombre:</strong> {{ $nombre ?: '-' }}</li>
+                    <li><strong>Apellido:</strong> {{ $apellido ?: '-' }}</li>
+                    <li><strong>DNI:</strong> {{ $dni ?: '-' }}</li>
+                    <li><strong>Teléfono:</strong>
+                        @if ($telefono)
+                            <a href="{{ $this->whatsappUrl() }}" target="_blank" class="text-blue-600 underline">
+                                {{ $telefono }} (WhatsApp)
+                            </a>
+                        @else
+                            -
+                        @endif
+                    </li>
+                    <li><strong>Email:</strong> {{ $email }}</li>
+                </ul>
+            @else
+                @can('update', $profile)
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs mb-1">Nombre</label>
@@ -232,23 +255,25 @@ layout('components.layouts.app');
                             @endif
                         </div>
                     </div>
-                @endif
-            </div>
+                @endcan
+            @endif
+        </div>
 
-            {{-- Académica --}}
-            <div class="bg-white dark:bg-zinc-800 rounded-xl shadow p-6 border border-neutral-200 dark:border-neutral-700">
-                <h3 class="text-lg font-semibold mb-4">Información Académica</h3>
+        {{-- Académica --}}
+        <div class="bg-white dark:bg-zinc-800 rounded-xl shadow p-6 border border-neutral-200 dark:border-neutral-700">
+            <h3 class="text-lg font-semibold mb-4">Información Académica</h3>
 
-                @if (!$editing)
-                    <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-2">
-                        <li><strong>Carrera:</strong> {{ $carrera ?: '-' }}</li>
-                        <li><strong>Comisión:</strong> {{ $comision ?: '-' }}</li>
-                        <li><strong>Instagram:</strong> {{ $instagram ?: '-' }}</li>
-                        <li><strong>Facebook:</strong> {{ $facebook ?: '-' }}</li>
-                        <li><strong>LinkedIn:</strong> {{ $linkedin ?: '-' }}</li>
-                        <li><strong>Web:</strong> {{ $web ?: '-' }}</li>
-                    </ul>
-                @else
+            @if (!$editing)
+                <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-2">
+                    <li><strong>Carrera:</strong> {{ $carrera ?: '-' }}</li>
+                    <li><strong>Comisión:</strong> {{ $comision ?: '-' }}</li>
+                    <li><strong>Instagram:</strong> {{ $instagram ?: '-' }}</li>
+                    <li><strong>Facebook:</strong> {{ $facebook ?: '-' }}</li>
+                    <li><strong>LinkedIn:</strong> {{ $linkedin ?: '-' }}</li>
+                    <li><strong>Web:</strong> {{ $web ?: '-' }}</li>
+                </ul>
+            @else
+                @can('update', $profile)
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs mb-1">Carrera</label>
@@ -281,7 +306,8 @@ layout('components.layouts.app');
                             @error('web') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
-                @endif
-            </div>
+                @endcan
+            @endif
         </div>
     </div>
+</div>

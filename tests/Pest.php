@@ -1,5 +1,6 @@
 <?php
-
+use App\Models\User;
+use App\Models\Role;
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -41,7 +42,17 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
-{
-    // ..
+// Helper común para crear usuario con rol y verificado
+function userWithRole(int $roleId): User {
+    return User::factory()->create([
+        'role_id' => $roleId,
+        'email_verified_at' => now(),
+    ]);
+}
+
+// Helper para asegurar los 3 roles base por ID fijo
+function seedRoles(): void {
+    Role::firstOrCreate(['id' => 1], ['name' => 'estudiante']);
+    Role::firstOrCreate(['id' => 2], ['name' => 'profesor']);
+    Role::firstOrCreate(['id' => 3], ['name' => 'admin']);
 }
