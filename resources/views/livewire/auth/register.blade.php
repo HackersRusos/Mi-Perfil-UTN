@@ -10,7 +10,8 @@ use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.auth')] class extends Component {
-    public string $name = '';
+    public string $first_name = '';
+    public string $last_name = '';
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
@@ -21,10 +22,14 @@ new #[Layout('components.layouts.auth')] class extends Component {
     public function register(): void
     {
         $validated = $this->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
+
+        $validated['name'] = trim($validated['first_name'].' '.$validated['last_name']);
+        unset($validated['first_name'], $validated['last_name']);
 
         $validated['password'] = Hash::make($validated['password']);
 
@@ -37,11 +42,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
 };
 
 ?>
-
-<div class="min-h-screen flex flex-col justify-center items-center bg-gray-100 p-4">
-
-    <!-- Contenedor principal -->
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
 
 <div class="min-h-screen flex flex-col justify-center items-center bg-slate-900">
     <div class="w-full max-w-md sm:max-w-xl md:max-w-3xl bg-slate-800 rounded-lg shadow-lg p-8">
@@ -94,8 +94,11 @@ new #[Layout('components.layouts.auth')] class extends Component {
                             </svg>
                         </span>
                         <input type="text" wire:model="first_name" placeholder="Ej: Juan"
-                               class="w-full pl-8 p-2 bg-slate-900 border border-slate-700 
+                               class="w-full pl-8 p-2 bg-slate-900 border border-slate-700
                                       rounded-md text-white focus:ring-2 focus:ring-blue-500">
+                        @error('first_name')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
 
@@ -112,8 +115,11 @@ new #[Layout('components.layouts.auth')] class extends Component {
                             </svg>
                         </span>
                         <input type="text" wire:model="last_name" placeholder="Ej: Pérez"
-                               class="w-full pl-8 p-2 bg-slate-900 border border-slate-700 
+                               class="w-full pl-8 p-2 bg-slate-900 border border-slate-700
                                       rounded-md text-white focus:ring-2 focus:ring-blue-500">
+                        @error('last_name')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -137,8 +143,11 @@ new #[Layout('components.layouts.auth')] class extends Component {
                         </svg>
                     </span>
                     <input type="email" wire:model="email" placeholder="usuario@frre.utn.edu.ar"
-                           class="w-full pl-8 p-2 bg-slate-900 border border-slate-700 
+                           class="w-full pl-8 p-2 bg-slate-900 border border-slate-700
                                   rounded-md text-white focus:ring-2 focus:ring-blue-500">
+                    @error('email')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 
@@ -160,8 +169,11 @@ new #[Layout('components.layouts.auth')] class extends Component {
                         </svg>
                     </span>
                     <input type="password" wire:model="password" placeholder="********"
-                           class="w-full pl-8 p-2 bg-slate-900 border border-slate-700 
+                           class="w-full pl-8 p-2 bg-slate-900 border border-slate-700
                                   rounded-md text-white focus:ring-2 focus:ring-blue-500">
+                    @error('password')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 
@@ -183,8 +195,11 @@ new #[Layout('components.layouts.auth')] class extends Component {
                         </svg>
                     </span>
                     <input type="password" wire:model="password_confirmation" placeholder="********"
-                           class="w-full pl-8 p-2 bg-slate-900 border border-slate-700 
+                           class="w-full pl-8 p-2 bg-slate-900 border border-slate-700
                                   rounded-md text-white focus:ring-2 focus:ring-blue-500">
+                    @error('password_confirmation')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 
