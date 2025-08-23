@@ -13,8 +13,8 @@ Route::get('/', function () {
 Volt::route('register', 'auth.register')->middleware('guest')->name('register');
 Volt::route('login', 'auth.login')->middleware('guest')->name('login');
 
-// ⚙️ Configuración (logueados + verificado)
-Route::middleware(['auth', 'verified'])->group(function () {
+// ⚙️ Configuración (solo usuarios autenticados)
+Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
@@ -24,22 +24,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // 🛡️ Admin (ruta creada; vista/volt se hará luego)
 Volt::route('admin/dashboard', 'admin.dashboard')
-    ->middleware(['auth', 'verified', 'role:admin'])
+    ->middleware(['auth', 'role:admin'])
     ->name('admin.dashboard');
 
 // 👨‍🏫 Dashboard Profesor
 Volt::route('profesor', 'profesor.dashboard')
-    ->middleware(['auth', 'verified', 'role:profesor'])
+    ->middleware(['auth', 'role:profesor'])
     ->name('profesor.dashboard');
 
 // 🎓 Dashboard Estudiante (su propio perfil)
 Volt::route('dashboard', 'estudiante.dashboard')
-    ->middleware(['auth', 'verified', 'role:estudiante'])
+    ->middleware(['auth', 'role:estudiante'])
     ->name('dashboard');
 
 // 👀 Ver perfil de estudiante (solo admin/profesor)
 Volt::route('estudiantes/{profile}', 'estudiante.dashboard')
-    ->middleware(['auth', 'verified', 'can:view,profile'])
+    ->middleware(['auth', 'can:view,profile'])
     ->name('estudiantes.show');
 
 require __DIR__ . '/auth.php';
