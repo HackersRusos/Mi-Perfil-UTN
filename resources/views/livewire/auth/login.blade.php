@@ -48,7 +48,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             default                          => route('home'),
         };
 
-        $this->redirectIntended(default: $to, navigate: true);
+        $this->redirectIntended(default: $to);
     }
 
     protected function ensureIsNotRateLimited(): void
