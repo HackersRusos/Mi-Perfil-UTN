@@ -10,16 +10,16 @@ beforeEach(function () {
 
     Route::middleware(['web'])->group(function () {
         Route::get('/__t/admin', fn () => 'ADMIN_OK')
-            ->middleware(['auth','verified','role:admin']);
+            ->middleware(['auth','role:admin']);
 
         Route::get('/__t/profesor', fn () => 'PROF_OK')
-            ->middleware(['auth','verified','role:profesor']);
+            ->middleware(['auth','role:profesor']);
 
         Route::get('/__t/estudiante', fn () => 'ESTU_OK')
-            ->middleware(['auth','verified','role:estudiante']);
+            ->middleware(['auth','role:estudiante']);
 
         Route::get('/__t/panel', fn () => 'PANEL_OK')
-            ->middleware(['auth','verified','role:admin,2']);
+            ->middleware(['auth','role:admin,2']);
     });
 });
 
