@@ -23,7 +23,7 @@ class RedirectIfAuthenticated
                 $to = match (true) {
                     $u->hasAnyRole('admin', '3')       => route('admin.dashboard'),
                     $u->hasAnyRole('profesor', '2')    => route('profesor.dashboard'),
-                    $u->hasAnyRole('estudiante', '1')  => route('dashboard'),
+                    $u->hasAnyRole('estudiante', '1')  => route('estudiante.dashboard'),
                     default                            => route('home'),
                 };
 

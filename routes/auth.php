@@ -1,35 +1,26 @@
 <?php
 
-use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
-use Livewire\Volt\Volt;
+use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Livewire\Auth\AuthForm as AuthForm;
+
+// ⛔ Nada de Volt acá.
 
 Route::middleware('guest')->group(function () {
-    Volt::route('login', 'auth.login')
-        ->name('login');
-
-    Volt::route('register', 'auth.register')
-        ->name('register');
-
-    Volt::route('forgot-password', 'auth.forgot-password')
-        ->name('password.request');
-
-    Volt::route('reset-password/{token}', 'auth.reset-password')
-        ->name('password.reset');
-
+    Route::get('/auth', AuthForm::class)->name('auth'); // /auth?mode=login o /auth?mode=register
+    Route::get('forgot-password', \App\Livewire\Auth\ForgotPassword::class)->name('password.request');
+    Route::get('reset-password/{token}', \App\Livewire\Auth\ResetPassword::class)->name('password.reset');
 });
 
 Route::middleware('auth')->group(function () {
-    Volt::route('verify-email', 'auth.verify-email')
-        ->name('verification.notice');
+    Route::get('verify-email', \App\Livewire\Auth\VerifyEmail::class)->name('verification.notice');
 
     Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
 
-    Volt::route('confirm-password', 'auth.confirm-password')
-        ->name('password.confirm');
+    Route::get('confirm-password', \App\Livewire\Auth\ConfirmPassword::class)->name('password.confirm');
 });
 
-Route::post('logout', App\Livewire\Actions\Logout::class)
-    ->name('logout');
+// Logout (si ya lo tenés así, dejalo)
+Route::post('logout', \App\Livewire\Actions\Logout::class)->name('logout');

@@ -23,7 +23,7 @@ class RoleMiddleware
         if (!$user) {
             return $request->expectsJson()
                 ? abort(401, 'No autenticado')
-                : redirect()->route('login');
+                : redirect()->route('auth', ['mode' => 'login']);
         }
     
         // Normalizar roles (separar por coma si vinieron en una sola cadena)
@@ -35,9 +35,8 @@ class RoleMiddleware
             return $next($request);
         }
     
-        return $request->expectsJson()
-            ? abort(403, 'Acceso denegado')
-            : abort(403, 'Acceso denegado'); // o redirect a vista de "sin permisos"
+        return redirect()->route('home')->withErrors(['error' => 'No tenés permisos para acceder aquí']);
+
     }
 
 }

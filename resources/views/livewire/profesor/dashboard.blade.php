@@ -1,22 +1,3 @@
-<?php
-
-use Livewire\Volt\Component;
-use App\Models\Profile;
-use function Livewire\Volt\layout;
-
-new class extends Component {
-    public $profiles;
-
-    public function mount(): void
-    {
-        // Traer todos los perfiles con el user relacionado
-        $this->profiles = Profile::with('user')->get();
-    }
-};
-
-layout('components.layouts.app');
-?>
-
 <div class="space-y-6">
     <!-- Encabezado -->
     <div>
