@@ -1,21 +1,29 @@
-<div class="mt-4 flex flex-col gap-6">
-    <flux:text class="text-center">
-        {{ __('Please verify your email address by clicking on the link we just emailed to you.') }}
-    </flux:text>
+<div class="flex flex-col gap-6 mx-auto w-full max-w-md">
 
-    @if (session('status') == 'verification-link-sent')
-        <flux:text class="text-center font-medium !dark:text-green-400 !text-green-600">
-            {{ __('A new verification link has been sent to the email address you provided during registration.') }}
-        </flux:text>
-    @endif
+    {{-- Encabezado institucional --}}
+    <x-auth-header
+    title="Verificá tu correo"
+    description="Te enviamos un enlace de verificación a tu email. Si no lo recibiste, podés solicitar otro." />
 
-    <div class="flex flex-col items-center justify-between space-y-3">
-        <flux:button wire:click="sendVerification" variant="primary" class="w-full">
-            {{ __('Resend verification email') }}
-        </flux:button>
 
-        <flux:link class="text-sm cursor-pointer" wire:click="logout">
-            {{ __('Log out') }}
-        </flux:link>
+    {{-- Título --}}
+    <div class="text-center space-y-1">
+        <h2 class="text-2xl font-bold text-[#1F3B70]">Verificá tu correo</h2>
+        <p class="text-sm text-[#6F84A9]">
+            Te enviamos un enlace de verificación a tu email. Si no lo recibiste, podés solicitar otro.
+        </p>
     </div>
+
+    {{-- Mensaje de estado --}}
+    <x-auth-session-status class="text-center" :status="session('status')" />
+
+    {{-- Botón para reenviar el correo --}}
+    <form wire:submit="resendVerificationEmail" class="space-y-6">
+
+        <flux:button variant="primary"
+                     type="submit"
+                     class="w-full !bg-[#0B2A6B] hover:!bg-[#0A245D] !text-white">
+            Reenviar enlace de verificación
+        </flux:button>
+    </form>
 </div>

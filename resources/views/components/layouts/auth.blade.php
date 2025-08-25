@@ -3,10 +3,10 @@
 <head>
     @include('partials.head')
 </head>
-<body class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-zinc-800">
+<body class="min-h-screen bg-gray-50 dark:bg-zinc-800 text-gray-800 dark:text-gray-100 antialiased flex items-center justify-center">
 
-    {{-- Contenedor centrado --}}
-    <main class="w-full max-w-md p-6">
+    {{-- Contenedor principal --}}
+    <main class="w-full max-w-md px-6 py-8 sm:px-8 sm:py-10">
         {{ $slot }}
     </main>
 

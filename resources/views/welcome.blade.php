@@ -7,7 +7,7 @@
 
     @vite('resources/css/app.css') {{-- Tailwind --}}
 </head>
-<body class="bg-gray-50 text-gray-800 antialiased">
+<body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
 
     {{-- Navbar --}}
     <nav class="bg-white shadow">
@@ -58,7 +58,7 @@
     </nav>
 
     {{-- Hero --}}
-    <main class="container mx-auto px-4 py-20 text-center">
+    <main class="container mx-auto px-4 py-4 text-center flex-grow">
         <h1 class="text-4xl font-bold text-blue-900 mb-4">Mi Perfil UTN</h1>
         <p class="text-lg text-gray-600 mb-6">
             Sistema de gestión de perfiles estudiantiles<br>
@@ -66,11 +66,11 @@
         </p>
 
         <img src="{{ asset('images/IPP--696x464.jpg') }}" alt="Edificio UTN"
-             class="mx-auto rounded-lg shadow-md max-w-md">
+             class="mx-auto rounded-lg shadow-md max-w-4xl">
     </main>
 
     {{-- Footer --}}
-    <footer class="bg-blue-900 text-white text-center py-6 mt-20">
+    <footer class="bg-blue-900 text-white text-center py-6">
         &copy; {{ date('Y') }} UTN - Facultad Regional Resistencia - Extensión Formosa
     </footer>
 

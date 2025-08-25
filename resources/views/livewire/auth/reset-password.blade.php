@@ -1,45 +1,49 @@
-<div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Reset password')" :description="__('Please enter your new password below')" />
+<div class="flex flex-col gap-6 mx-auto w-full max-w-md">
 
-    <!-- Session Status -->
+    {{-- Encabezado institucional --}}
+    <x-auth-header
+    title="Restablecer contraseña"
+    description="Ingresá tu nueva contraseña para continuar." />
+
+
+    {{-- Título --}}
+    <div class="text-center space-y-1">
+        <h2 class="text-2xl font-bold text-[#1F3B70]">Restablecer contraseña</h2>
+        <p class="text-sm text-[#6F84A9]">Ingresá tu nueva contraseña para continuar.</p>
+    </div>
+
+    {{-- Estado de sesión --}}
     <x-auth-session-status class="text-center" :status="session('status')" />
 
-    <form wire:submit="resetPassword" class="flex flex-col gap-6">
-        <!-- Email Address -->
-        <flux:input
-            wire:model="email"
-            :label="__('Email')"
-            type="email"
-            required
-            autocomplete="email"
-        />
+    {{-- Formulario --}}
+    <form wire:submit="resetPassword" class="space-y-6">
 
-        <!-- Password -->
-        <flux:input
-            wire:model="password"
-            :label="__('Password')"
-            type="password"
-            required
-            autocomplete="new-password"
-            :placeholder="__('Password')"
-            viewable
-        />
+        {{-- Email --}}
+        <x-auth.input label="Email Institucional"
+                      name="email"
+                      model="email"
+                      type="email"
+                      placeholder="usuario@frre.utn.edu.ar" />
 
-        <!-- Confirm Password -->
-        <flux:input
-            wire:model="password_confirmation"
-            :label="__('Confirm password')"
-            type="password"
-            required
-            autocomplete="new-password"
-            :placeholder="__('Confirm password')"
-            viewable
-        />
+        {{-- Contraseña nueva --}}
+        <x-auth.password label="Nueva contraseña"
+                         model="password"
+                         show="{{ $showPassword }}"
+                         toggle="togglePassword"
+                         placeholder="••••••••" />
 
-        <div class="flex items-center justify-end">
-            <flux:button type="submit" variant="primary" class="w-full">
-                {{ __('Reset password') }}
-            </flux:button>
-        </div>
+        {{-- Confirmación --}}
+        <x-auth.password label="Confirmar nueva contraseña"
+                         model="password_confirmation"
+                         show="{{ $showPasswordConfirm }}"
+                         toggle="togglePasswordConfirm"
+                         placeholder="••••••••" />
+
+        {{-- Botón --}}
+        <flux:button variant="primary"
+                     type="submit"
+                     class="w-full !bg-[#0B2A6B] hover:!bg-[#0A245D] !text-white">
+            Guardar nueva contraseña
+        </flux:button>
     </form>
 </div>

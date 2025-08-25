@@ -1,26 +1,37 @@
-<div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Forgot password')" :description="__('Enter your email to receive a password reset link')" />
+<div class="flex flex-col gap-6 mx-auto w-full max-w-md">
 
-    <!-- Session Status -->
+    {{-- Encabezado institucional --}}
+    <x-auth-header
+    title="¿Olvidaste tu contraseña?"
+    description="Ingresá tu email institucional y te enviaremos un enlace para restablecerla." />
+
+
+    {{-- Título --}}
+    <div class="text-center space-y-1">
+        <h2 class="text-2xl font-bold text-[#1F3B70]">¿Olvidaste tu contraseña?</h2>
+        <p class="text-sm text-[#6F84A9]">
+            Ingresá tu email institucional y te enviaremos un enlace para restablecerla.
+        </p>
+    </div>
+
+    {{-- Estado de sesión --}}
     <x-auth-session-status class="text-center" :status="session('status')" />
 
-    <form wire:submit="sendPasswordResetLink" class="flex flex-col gap-6">
-        <!-- Email Address -->
-        <flux:input
-            wire:model="email"
-            :label="__('Email Address')"
-            type="email"
-            required
-            autofocus
-            placeholder="email@example.com"
-            viewable
-        />
+    {{-- Formulario --}}
+    <form wire:submit="sendResetLink" class="space-y-6">
 
-        <flux:button variant="primary" type="submit" class="w-full">{{ __('Email password reset link') }}</flux:button>
+        {{-- Email --}}
+        <x-auth.input label="Email Institucional"
+                      name="email"
+                      model="email"
+                      type="email"
+                      placeholder="usuario@frre.utn.edu.ar" />
+
+        {{-- Botón --}}
+        <flux:button variant="primary"
+                     type="submit"
+                     class="w-full !bg-[#0B2A6B] hover:!bg-[#0A245D] !text-white">
+            Enviar enlace de recuperación
+        </flux:button>
     </form>
-
-    <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-400">
-        {{ __('Or, return to') }}
-        <flux:link :href="route('login')" wire:navigate>{{ __('log in') }}</flux:link>
-    </div>
 </div>
