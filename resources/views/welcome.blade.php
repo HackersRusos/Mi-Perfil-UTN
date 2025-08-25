@@ -20,17 +20,18 @@
                 @auth
                     @php
                         $u = auth()->user();
+                    
                         if ($u->hasAnyRole('admin','3')) {
                             $panel = route('admin.dashboard');
                         } elseif ($u->hasAnyRole('profesor','2')) {
                             $panel = route('profesor.dashboard');
                         } elseif ($u->hasAnyRole('estudiante','1')) {
-                            $panel = route('estudiante.dashboard');
+                            // Mi perfil del estudiante ahora es por DNI
+                            $panel = route('estudiantes.show', $u->profile->dni);
                         } else {
                             $panel = route('home');
                         }
                     @endphp
-                
                     <a href="{{ $panel }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                         Panel
                     </a>

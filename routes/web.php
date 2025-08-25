@@ -59,15 +59,20 @@ Route::get('/profesor', ProfesorDashboard::class)
     ->middleware(['auth', 'role:profesor'])
     ->name('profesor.dashboard');
 
-// 🎓 Estudiante o profesor
-Route::get('/estudiante', EstudianteDashboard::class)
-    ->middleware(['auth', 'role:estudiante,profesor'])
-    ->name('estudiante.dashboard');
-
-// 👀 Ver perfil de estudiante 
-Route::get('/estudiantes/{profileId}', EstudianteDashboard::class)
+// Ver cualquier perfil por DNI (incluye el propio)
+Route::get('/estudiante/{profile}', EstudianteDashboard::class)
     ->middleware(['auth', 'can:view,profile'])
     ->name('estudiantes.show');
+
+// Alias: si un estudiante entra a /estudiante → lo mandamos a su propio perfil
+Route::get('/estudiante', function () {
+    $user = auth()->user();
+    if (! $user || ! $user->profile) {
+        abort(404, 'Perfil no encontrado');
+    }
+    return redirect()->route('estudiantes.show', $user->profile->dni);
+})->middleware(['auth', 'role:estudiante,profesor'])
+  ->name('estudiante.dashboard');
 
 // 🔓 Logout (POST recomendado)
 Route::post('/logout', function () {

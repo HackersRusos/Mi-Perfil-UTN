@@ -4,12 +4,14 @@
     {{-- Logo redirige al dashboard según rol --}}
     @php
         $u = auth()->user();
+    
         if ($u->hasAnyRole('admin','3')) {
             $panel = route('admin.dashboard');
         } elseif ($u->hasAnyRole('profesor','2')) {
             $panel = route('profesor.dashboard');
         } elseif ($u->hasAnyRole('estudiante','1')) {
-            $panel = route('estudiante.dashboard');
+            // Mi perfil del estudiante ahora es por DNI
+            $panel = route('estudiantes.show', $u->profile->dni);
         } else {
             $panel = route('home');
         }
@@ -21,8 +23,8 @@
         {{-- Mi Perfil: válido para estudiante y profesor --}}
         @if($u->hasAnyRole('estudiante','1','profesor','2'))
             <flux:navlist.item icon="user"
-                :href="route('estudiante.dashboard')"
-                :current="request()->routeIs('estudiante*')"
+                :href="route('estudiantes.show', auth()->user()->profile?->dni ?? 'no-perfil')"
+                :current="request()->routeIs('estudiantes.show') && request()->route('profile')->dni === auth()->user()->profile->dni"
                 wire:navigate>
                 Mi Perfil
             </flux:navlist.item>

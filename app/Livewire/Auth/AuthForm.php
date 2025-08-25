@@ -44,6 +44,24 @@ class AuthForm extends Component
     public function togglePassword(): void        { $this->showPassword = ! $this->showPassword; }
     public function togglePasswordConfirm(): void { $this->showPasswordConfirm = ! $this->showPasswordConfirm; }
 
+    private function redirectToRoleDashboard($user)
+    {
+        if ($user->hasAnyRole('admin','3')) {
+            return route('admin.dashboard');
+        }
+    
+        if ($user->hasAnyRole('profesor','2')) {
+            return route('profesor.dashboard');
+        }
+    
+        if ($user->hasAnyRole('estudiante','1')) {
+            // ✅ Redirige a su propio perfil con el dni
+            return route('estudiantes.show', $user->profile->dni);
+        }
+    
+        return route('home');
+    }
+
     /** ---- LOGIN ---- */
     public function login(): void
     {
@@ -51,28 +69,23 @@ class AuthForm extends Component
             'email'    => ['required','email'],
             'password' => ['required'],
         ]);
-
+    
         $this->ensureIsNotRateLimited();
-
+    
         if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             RateLimiter::hit($this->throttleKey());
             throw ValidationException::withMessages(['email' => __('auth.failed')]);
         }
-
+    
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
-
-        // redirección según tus roles
+    
         $u = Auth::user();
-        $to = match (true) {
-            $u->hasAnyRole('admin','3')      => route('admin.dashboard'),
-            $u->hasAnyRole('profesor','2')   => route('profesor.dashboard'),
-            $u->hasAnyRole('estudiante','1') => route('estudiante.dashboard'),
-            default                          => route('home'),
-        };
-
+        $to = $this->redirectToRoleDashboard($u);
+    
         $this->redirect($to, navigate: false);
     }
+
 
     protected function ensureIsNotRateLimited(): void
     {
@@ -102,16 +115,16 @@ class AuthForm extends Component
             'password'              => ['required','string', PasswordRule::defaults(), 'confirmed'],
             'password_confirmation' => ['required','string'],
         ]);
-
+    
         $name = trim($validated['first_name'].' '.$validated['last_name']);
-
+    
         $user = User::create([
             'name'     => $name,
             'email'    => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role_id'  => 1, // estudiante por defecto (ajustá si usás spatie/roles)
+            'role_id'  => 1, // estudiante por defecto
         ]);
-
+    
         Profile::create([
             'user_id'   => $user->id,
             'nombre'    => $validated['first_name'],
@@ -123,12 +136,15 @@ class AuthForm extends Component
             'foto_path' => null,
             'social_links' => null,
         ]);
-
+    
         event(new Registered($user));
         Auth::login($user);
-
-        $this->redirect(route('dashboard'), navigate: true);
+    
+        $to = $this->redirectToRoleDashboard($user);
+    
+        $this->redirect($to, navigate: false);
     }
+
 
     public function render()
     {

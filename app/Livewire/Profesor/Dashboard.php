@@ -7,17 +7,16 @@ use App\Models\Profile;
 
 class Dashboard extends Component
 {
-     public $profiles;
-
-    public function mount()
-    {
-        $this->profiles = Profile::with('user')->orderBy('apellido')->get();
-    }
-
     public function render()
     {
+        // Solo perfiles de estudiantes (role_id = 1)
+        $profiles = Profile::with('user')
+            ->whereHas('user', fn($q) => $q->where('role_id', 1))
+            ->orderBy('apellido')
+            ->get();
+
         return view('livewire.profesor.dashboard', [
-            'profiles' => $this->profiles
+            'profiles' => $profiles,
         ])->layout('components.layouts.app');
     }
 }

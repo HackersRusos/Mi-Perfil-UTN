@@ -23,33 +23,29 @@ class Dashboard extends Component
      * Si viene un profileId → carga ese perfil
      * Si no → carga el perfil del usuario autenticado
      */
-    public function mount($profileId = null)
+    public function mount(Profile $profile)
     {
-        if ($profileId) {
-            $profile = Profile::findOrFail($profileId);
-            Gate::authorize('view', $profile);
-            $this->profile = $profile;
-            $this->email   = $profile->user->email;
-        } else {
-            $u = auth()->user();
-            $this->profile = $u->profile;
-            $this->email   = $u->email;
-        }
-
-        $p = $this->profile;
-        $this->nombre   = $p->nombre   ?? null;
-        $this->apellido = $p->apellido ?? null;
-        $this->dni      = $p->dni      ?? null;
-        $this->telefono = $p->telefono ?? null;
-        $this->carrera  = $p->carrera  ?? null;
-        $this->comision = $p->comision ?? null;
-
-        $links = $p->social_links ?? [];
+        Gate::authorize('view', $profile);
+    
+        $this->profile = $profile;
+        $this->email   = $profile->user->email;
+    
+        $this->nombre   = $profile->nombre   ?? null;
+        $this->apellido = $profile->apellido ?? null;
+        $this->dni      = $profile->dni      ?? null;
+        $this->telefono = $profile->telefono ?? null;
+        $this->carrera  = $profile->carrera  ?? null;
+        $this->comision = $profile->comision ?? null;
+    
+        $links = $profile->social_links ?? [];
         $this->instagram = $links['instagram'] ?? null;
         $this->facebook  = $links['facebook']  ?? null;
         $this->linkedin  = $links['linkedin']  ?? null;
         $this->web       = $links['web']       ?? null;
     }
+
+
+
 
     public function rules()
     {
@@ -130,7 +126,8 @@ class Dashboard extends Component
 
     public function render()
     {
-        return view('livewire.estudiante.dashboard')
-            ->layout('components.layouts.app');
+        return view('livewire.estudiante.dashboard', [
+            'profile' => $this->profile,
+        ])->layout('components.layouts.app');
     }
 }
