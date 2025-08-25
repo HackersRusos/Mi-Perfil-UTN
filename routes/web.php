@@ -59,13 +59,13 @@ Route::get('/profesor', ProfesorDashboard::class)
     ->middleware(['auth', 'role:profesor'])
     ->name('profesor.dashboard');
 
-// 🎓 Estudiante
+// 🎓 Estudiante o profesor
 Route::get('/estudiante', EstudianteDashboard::class)
-    ->middleware(['auth', 'role:estudiante'])
+    ->middleware(['auth', 'role:estudiante,profesor'])
     ->name('estudiante.dashboard');
 
-// 👀 Ver perfil de estudiante
-Route::get('/estudiantes/{profile}', EstudianteDashboard::class)
+// 👀 Ver perfil de estudiante 
+Route::get('/estudiantes/{profileId}', EstudianteDashboard::class)
     ->middleware(['auth', 'can:view,profile'])
     ->name('estudiantes.show');
 

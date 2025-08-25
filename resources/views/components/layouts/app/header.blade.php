@@ -17,25 +17,35 @@
 
     {{-- Navbar links (solo desktop) --}}
     <flux:navbar class="-mb-px max-lg:hidden">
-        @if($u->hasAnyRole('estudiante','1'))
-            <flux:navbar.item icon="user" :href="route('estudiante.dashboard')" :current="request()->routeIs('estudiante.dashboard')" wire:navigate>
-                Mi Perfil
-            </flux:navbar.item>
-        @endif
 
+        {{-- Mi Perfil: válido para estudiante y profesor --}}
+        @if($u->hasAnyRole('estudiante','1','profesor','2'))
+            <flux:navlist.item icon="user"
+                :href="route('estudiante.dashboard')"
+                :current="request()->routeIs('estudiante*')"
+                wire:navigate>
+                Mi Perfil
+            </flux:navlist.item>
+        @endif
+        
+        {{-- Profesores tienen además Estudiantes --}}
         @if($u->hasAnyRole('profesor','2'))
-            <flux:navbar.item icon="user" :href="route('estudiante.dashboard')" :current="request()->routeIs('estudiante.dashboard')" wire:navigate>
-                Mi Perfil
-            </flux:navbar.item>
-            <flux:navbar.item icon="users" :href="route('profesor.dashboard')" :current="request()->routeIs('profesor*')" wire:navigate>
+            <flux:navlist.item icon="users"
+                :href="route('profesor.dashboard')"
+                :current="request()->routeIs('profesor*')"
+                wire:navigate>
                 Estudiantes
-            </flux:navbar.item>
+            </flux:navlist.item>
         @endif
 
+        {{-- Admin → Usuarios --}}
         @if($u->hasAnyRole('admin','3'))
-            <flux:navbar.item icon="shield-check" :href="route('admin.dashboard')" :current="request()->routeIs('admin*')" wire:navigate>
+            <flux:navlist.item icon="shield-check"
+                :href="route('admin.dashboard')"
+                :current="request()->routeIs('admin*')"
+                wire:navigate>
                 Usuarios
-            </flux:navbar.item>
+            </flux:navlist.item>
         @endif
     </flux:navbar>
 

@@ -25,7 +25,7 @@
                         } elseif ($u->hasAnyRole('profesor','2')) {
                             $panel = route('profesor.dashboard');
                         } elseif ($u->hasAnyRole('estudiante','1')) {
-                            $panel = route('estudiante.dashboard'); 
+                            $panel = route('estudiante.dashboard');
                         } else {
                             $panel = route('home');
                         }
@@ -34,6 +34,13 @@
                     <a href="{{ $panel }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                         Panel
                     </a>
+                    <form method="POST" action="{{ route('logout') }}" class="w-full inline">
+                        @csrf
+                        <button type="submit" 
+                            class="px-4 py-2 rounded-full bg-red-600 text-white font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition">
+                            🚪 {{ __('Cerrar sesión') }}
+                        </button>
+                    </form>
                 @else
                     <a href="{{ route('auth', ['mode' => 'login']) }}" class="px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">
                         Iniciar Sesión
@@ -41,6 +48,8 @@
                     <a href="{{ route('auth', ['mode' => 'register']) }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                         Registrarse
                     </a>
+
+                    
                 @endauth
 
             </div>

@@ -13,7 +13,7 @@ class ProfilePolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasAnyRole('profesor','2','admin','3');
     }
 
     /**
@@ -39,7 +39,7 @@ class ProfilePolicy
     public function update(User $user, Profile $profile): bool
     {
         return $user->id === $profile->user_id
-            && $user->hasRole('estudiante','1');
+            && $user->hasAnyRole('estudiante','1','profesor','2');
     }
 
     /**

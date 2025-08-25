@@ -19,9 +19,14 @@ class Dashboard extends Component
     public $foto;
     public ?Profile $profile = null;
 
-    public function mount(?Profile $profile = null)
+    /**
+     * Si viene un profileId → carga ese perfil
+     * Si no → carga el perfil del usuario autenticado
+     */
+    public function mount($profileId = null)
     {
-        if ($profile) {
+        if ($profileId) {
+            $profile = Profile::findOrFail($profileId);
             Gate::authorize('view', $profile);
             $this->profile = $profile;
             $this->email   = $profile->user->email;
@@ -125,7 +130,7 @@ class Dashboard extends Component
 
     public function render()
     {
-        return view('livewire.estudiante.dashboard')->layout('components.layouts.app');
-
+        return view('livewire.estudiante.dashboard')
+            ->layout('components.layouts.app');
     }
 }
