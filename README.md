@@ -1,235 +1,93 @@
-# Mi-Perfil-UTN
-Sistema de gestión de perfiles académicos desarrollado en Laravel + Livewire + Volt. Permite registro y visualización de datos de estudiantes, con roles de usuario y administrador, carga de foto, enlaces a redes y acceso directo a WhatsApp.
+# tpg01-repositorios-buenas-practicas-gines
 
-# Plan de Features — Mi Perfil UTN (MVP)
 
-Este documento define alcance, criterios de aceptación, tareas técnicas, rutas, seguridad y tests de cada feature del MVP.
-Convención de ramas: feature/<nombre> → PR a develop.
 
-# 1) Auth (login / registro / logout / verificación / reset)
+## Getting started
 
-Rama: feature/auth
+To make it easy for you to get started with GitLab, here's a list of recommended next steps.
 
-Objetivo
+Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
 
-Permitir a usuarios registrarse, iniciar/cerrar sesión y recuperar contraseña. Forzar email verificado para zonas protegidas.
+## Add your files
 
-Alcance
+- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
+- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
 
-Instalar/confirmar Breeze + Livewire + Volt.
+```
+cd existing_repo
+git remote add origin https://gitlab.com/GustavoGines/tpg01-repositorios-buenas-practicas-gines.git
+git branch -M main
+git push -uf origin main
+```
 
-Formularios: /login, /register, /forgot-password, /reset-password.
+## Integrate with your tools
 
-Verificación de email (middleware verified).
+- [ ] [Set up project integrations](https://gitlab.com/GustavoGines/tpg01-repositorios-buenas-practicas-gines/-/settings/integrations)
 
-Config de mailer (.env) o MAIL_MAILER=log en dev.
+## Collaborate with your team
 
-Criterios de aceptación
+- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
+- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
+- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
+- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
+- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
 
-Usuario puede registrarse y logearse.
+## Test and Deploy
 
-Usuario no verificado no accede a rutas con verified.
+Use the built-in continuous integration in GitLab.
 
-Reset de contraseña envía enlace (o aparece en logs).
+- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
+- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
+- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
+- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
+- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
 
-Logout funcional.
+***
 
-Rutas
+# Editing this README
 
-Públicas: /login, /register, /forgot-password, /reset-password/*.
+When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
 
-Protegidas: /dashboard (placeholder) con auth + verified.
+## Suggestions for a good README
 
-Seguridad
+Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
 
-Throttle de login (Breeze).
+## Name
+Choose a self-explaining name for your project.
 
-Validaciones servidor: email válido, password min 6/8 (configurable).
+## Description
+Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
 
-Tests (mínimos)
+## Badges
+On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
 
-Invitado redirige de /dashboard a /login.
+## Visuals
+Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
 
-Login correcto redirige a /dashboard.
+## Installation
+Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-Reset de contraseña genera token (assert en log o DB).
+## Usage
+Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-# 2) Roles y autorización (admin/user)
+## Support
+Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
 
-Rama: feature/roles-permissions
+## Roadmap
+If you have ideas for releases in the future, it is a good idea to list them in the README.
 
-Objetivo
+## Contributing
+State if you are open to contributions and what your requirements are for accepting them.
 
-Diferenciar admin y user; restringir vistas y acciones según rol.
+For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
 
-Alcance
+You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
 
-Columna role en users (enum: user|admin, default user).
+## Authors and acknowledgment
+Show your appreciation to those who have contributed to the project.
 
-Método User::isAdmin().
+## License
+For open source projects, say how it is licensed.
 
-Middleware admin para rutas admin.
-
-Policies para Profile (view/update/viewAny/delete).
-
-Criterios de aceptación
-
-Usuario común ve/edita solo su perfil.
-
-Admin ve todos los perfiles y accede a rutas admin.
-
-Rutas admin devuelven 403 a no-admin.
-
-Rutas
-
-/admin/* bajo middleware admin.
-
-Seguridad
-
-Policies invocadas desde componentes/páginas Volt usando $this->authorize(...).
-
-Tests
-
-user no accede a /admin/* (403).
-
-admin accede con éxito.
-
-# 3) Modelo Profile + migraciones
-
-Rama: feature/profile-model
-
-Objetivo
-
-Definir entidad Profile (1–1 con User) con campos requeridos.
-
-Alcance
-
-Tabla profiles:
-
-user_id (FK, cascade delete)
-
-apellido (string, req)
-
-nombre (string, req)
-
-comision (nullable)
-
-telefono (req)
-
-carrera (nullable)
-
-dni (string, unique, req)
-
-foto_path (nullable)
-
-social_links (json, nullable: {instagram, facebook, linkedin, web})
-
-Relación User hasOne Profile.
-
-Cast social_links a array.
-
-Helper whatsappUrl() (normaliza a wa.me/+54...).
-
-Criterios de aceptación
-
-Migraciones corren limpio.
-
-dni es único.
-
-storage:link creado para imágenes.
-
-Seguridad
-
-Nada público: creación/lectura solo autenticado y por policy.
-
-Tests
-
-Se crea Profile con dni único.
-
-Relación user->profile funciona.
-
-# 4) Mi Perfil (CRUD propio con Volt)
-
-Rama: feature/profile-self-crud
-
-Objetivo
-
-Que cada usuario pueda crear/editar/ver su propio perfil.
-
-Alcance
-
-Página Volt: /mi-perfil
-
-Form con validaciones:
-
-apellido, nombre, telefono, dni (unique:ignore).
-
-foto (imagen, max ~2MB).
-
-social_links (urls válidas).
-
-Botón “Abrir WhatsApp” (usa whatsappUrl()).
-
-Criterios de aceptación
-
-Usuario sin perfil puede crearlo; con perfil puede editarlo.
-
-Upload y preview de foto.
-
-Link WhatsApp abre correctamente.
-
-Rutas
-
-/mi-perfil bajo auth + verified.
-
-Seguridad
-
-Policy@update para evitar editar otros perfiles.
-
-Tests
-
-Guardado exitoso del propio perfil.
-
-Validación de dni único al editar (ignora su propio id).
-
-# 5) Listado Admin (búsqueda + paginación)
-
-Rama: feature/admin-profiles-list
-
-Objetivo
-
-Como admin, listar todos los perfiles con búsqueda y paginación.
-
-Alcance
-
-Página Volt: /admin/perfiles
-
-Grid con: foto, apellido/nombre, DNI, comisión.
-
-Filtros: búsqueda por apellido|nombre|dni|comision|carrera.
-
-Paginación (12/24 por página).
-
-Links rápidos: WhatsApp y redes si existen.
-
-Criterios de aceptación
-
-Solo admin accede.
-
-Búsqueda parcial funciona.
-
-Paginación estable.
-
-Rutas
-
-/admin/perfiles bajo admin.
-
-Seguridad
-
-Policy@viewAny y middleware admin.
-
-Tests
-
-Admin ve listado; user 403.
-
-Búsqueda devuelve resultados esperados.
+## Project status
+If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
