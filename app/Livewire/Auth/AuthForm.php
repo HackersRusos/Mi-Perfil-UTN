@@ -62,13 +62,25 @@ class AuthForm extends Component
 
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
-            RateLimiter::hit($this->throttleKey());
-
+        $maxAttempts = 3;
+        $attempts = RateLimiter::attempts($this->throttleKey());
+        
+        if ($attempts >= $maxAttempts) {
             throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
+                'email' => "Demasiados intentos de acceso. Por favor intenta nuevamente en " .
+                           RateLimiter::availableIn($this->throttleKey()) . " segundos.",
             ]);
         }
+        
+        $remaining = $maxAttempts - $attempts;
+        
+        if (! Auth::attempt(['email' => strtolower(trim($this->email)), 'password' => $this->password], $this->remember)) {
+            RateLimiter::hit($this->throttleKey());
+            throw ValidationException::withMessages([
+                'email' => "Correo o contraseña incorrectos. Te quedan {$remaining} intentos.",
+            ]);
+        }
+
 
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
