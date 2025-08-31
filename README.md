@@ -1,235 +1,149 @@
-# Mi-Perfil-UTN
-Sistema de gestión de perfiles académicos desarrollado en Laravel + Livewire + Volt. Permite registro y visualización de datos de estudiantes, con roles de usuario y administrador, carga de foto, enlaces a redes y acceso directo a WhatsApp.
+# 📖 Mi Perfil UTN – Sistema de Gestión de Perfiles Estudiantiles
 
-# Plan de Features — Mi Perfil UTN (MVP)
+![UTN Logo](public/images/UTN_FRRE.png)
 
-Este documento define alcance, criterios de aceptación, tareas técnicas, rutas, seguridad y tests de cada feature del MVP.
-Convención de ramas: feature/<nombre> → PR a develop.
+Aplicación web desarrollada en **Laravel 12 + Livewire** para la gestión de perfiles estudiantiles de la **UTN – Facultad Regional Resistencia**.  
+Incluye módulos de autenticación, recuperación de contraseña, control de roles (Administrador, Profesor, Estudiante) y paneles personalizados.
 
-# 1) Auth (login / registro / logout / verificación / reset)
+---
 
-Rama: feature/auth
+## 👥 Integrantes
 
-Objetivo
+- **Ginés Gustavo**  
+- **Heretichi Gabriela**  
+- **Quintana Javier**  
+- **Nacimento Leandro**
 
-Permitir a usuarios registrarse, iniciar/cerrar sesión y recuperar contraseña. Forzar email verificado para zonas protegidas.
+---
 
-Alcance
+# 🚀 Guía de instalación (para desarrolladores/correctores)
 
-Instalar/confirmar Breeze + Livewire + Volt.
+## 1. Clonar el repositorio
+git clone https://github.com/HackersRusos/Mi-Perfil-UTN.git
+cd Mi-Perfil-UTN
 
-Formularios: /login, /register, /forgot-password, /reset-password.
+## 2. Instalar dependencias PHP
+composer install
 
-Verificación de email (middleware verified).
+## 3. Instalar dependencias JS
+npm install && npm run build
 
-Config de mailer (.env) o MAIL_MAILER=log en dev.
+## 4. Configurar entorno
+Copiar el archivo .env.example a .env y configurar:
 
-Criterios de aceptación
+.env
+APP_NAME="Mi Perfil UTN"
+APP_ENV=local
+APP_URL=http://localhost:8000
 
-Usuario puede registrarse y logearse.
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=MiPerfilUTN
+DB_USERNAME=root
+DB_PASSWORD=
 
-Usuario no verificado no accede a rutas con verified.
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=465
+MAIL_USERNAME=miperfilutn@gmail.com
+MAIL_PASSWORD=contraseña_app
+MAIL_ENCRYPTION=ssl
+MAIL_FROM_ADDRESS="miperfilutn@gmail.com"
+MAIL_FROM_NAME="Mi Perfil UTN"
 
-Reset de contraseña envía enlace (o aparece en logs).
+## 5. Generar APP_KEY
+php artisan key:generate
 
-Logout funcional.
+## 6. Migraciones y seeders
+php artisan migrate --seed
+Esto crea las tablas y un usuario administrador inicial.
 
-Rutas
+## 7. Levantar servidor
+php artisan serve
+Abrir en 👉 http://localhost:8000
 
-Públicas: /login, /register, /forgot-password, /reset-password/*.
+🔑 Acceso inicial (Admin)
+Email: admin@gmail.com
 
-Protegidas: /dashboard (placeholder) con auth + verified.
+Contraseña: admin123
 
-Seguridad
+# 📖 Guía de uso (Manual para usuarios)
 
-Throttle de login (Breeze).
+## 🎯 Introducción
 
-Validaciones servidor: email válido, password min 6/8 (configurable).
+Mi Perfil UTN permite que estudiantes, profesores y administradores gestionen sus perfiles de manera segura.
 
-Tests (mínimos)
+## 👥 Roles en el sistema
 
-Invitado redirige de /dashboard a /login.
+### 🔑 Administrador
 
-Login correcto redirige a /dashboard.
+Accede al panel de administración.
 
-Reset de contraseña genera token (assert en log o DB).
+Crea, edita y elimina usuarios.
 
-# 2) Roles y autorización (admin/user)
+Asigna roles (administrador, profesor, estudiante).
 
-Rama: feature/roles-permissions
+Supervisa el sistema completo.
 
-Objetivo
+### 👨‍🏫 Profesor
 
-Diferenciar admin y user; restringir vistas y acciones según rol.
+Consulta perfiles de estudiantes.
 
-Alcance
+Visualiza datos de contacto y académicos.
 
-Columna role en users (enum: user|admin, default user).
+Solo accede a estudiantes que le corresponden.
 
-Método User::isAdmin().
+### 🎓 Estudiante
 
-Middleware admin para rutas admin.
+Accede a su perfil personal.
 
-Policies para Profile (view/update/viewAny/delete).
+Puede actualizar datos básicos (teléfono, redes sociales, foto).
 
-Criterios de aceptación
+Recibe notificaciones institucionales.
 
-Usuario común ve/edita solo su perfil.
+## 🚀 Ingreso al sistema
 
-Admin ve todos los perfiles y accede a rutas admin.
+Abrir el navegador en:
+👉 http://localhost:8000
 
-Rutas admin devuelven 403 a no-admin.
+## Seleccionar:
 
-Rutas
+Iniciar Sesión si ya tenés cuenta.
 
-/admin/* bajo middleware admin.
+Registrarse si es la primera vez.
 
-Seguridad
+Usar siempre tu correo institucional:
 
-Policies invocadas desde componentes/páginas Volt usando $this->authorize(...).
+css
+usuario@frre.utn.edu.ar
 
-Tests
+## 🔑 Recuperar contraseña
 
-user no accede a /admin/* (403).
+En la pantalla de login, hacer clic en “¿Olvidaste tu contraseña?”
 
-admin accede con éxito.
+Ingresar el correo institucional.
 
-# 3) Modelo Profile + migraciones
+Se enviará un mail con un botón “Restablecer contraseña”.
 
-Rama: feature/profile-model
+Elegir la nueva clave e iniciar sesión normalmente.
 
-Objetivo
+## 🖥️ Panel de control
 
-Definir entidad Profile (1–1 con User) con campos requeridos.
+Administrador: dashboard, gestión de usuarios, asignación de roles.
 
-Alcance
+Profesor: listado de estudiantes asignados, consulta de perfiles.
 
-Tabla profiles:
+Estudiante: actualización de datos personales, notificaciones.
 
-user_id (FK, cascade delete)
+## 🔐 Seguridad
+Máximo 3 intentos fallidos de login antes del bloqueo temporal.
 
-apellido (string, req)
+Autenticación obligatoria con correo institucional.
 
-nombre (string, req)
+Sesiones seguras y regeneradas al inicio de sesión.
 
-comision (nullable)
+## 📩 Soporte
+Ante cualquier problema contactar a:
+📧 miperfilutn@gmail.com
 
-telefono (req)
-
-carrera (nullable)
-
-dni (string, unique, req)
-
-foto_path (nullable)
-
-social_links (json, nullable: {instagram, facebook, linkedin, web})
-
-Relación User hasOne Profile.
-
-Cast social_links a array.
-
-Helper whatsappUrl() (normaliza a wa.me/+54...).
-
-Criterios de aceptación
-
-Migraciones corren limpio.
-
-dni es único.
-
-storage:link creado para imágenes.
-
-Seguridad
-
-Nada público: creación/lectura solo autenticado y por policy.
-
-Tests
-
-Se crea Profile con dni único.
-
-Relación user->profile funciona.
-
-# 4) Mi Perfil (CRUD propio con Volt)
-
-Rama: feature/profile-self-crud
-
-Objetivo
-
-Que cada usuario pueda crear/editar/ver su propio perfil.
-
-Alcance
-
-Página Volt: /mi-perfil
-
-Form con validaciones:
-
-apellido, nombre, telefono, dni (unique:ignore).
-
-foto (imagen, max ~2MB).
-
-social_links (urls válidas).
-
-Botón “Abrir WhatsApp” (usa whatsappUrl()).
-
-Criterios de aceptación
-
-Usuario sin perfil puede crearlo; con perfil puede editarlo.
-
-Upload y preview de foto.
-
-Link WhatsApp abre correctamente.
-
-Rutas
-
-/mi-perfil bajo auth + verified.
-
-Seguridad
-
-Policy@update para evitar editar otros perfiles.
-
-Tests
-
-Guardado exitoso del propio perfil.
-
-Validación de dni único al editar (ignora su propio id).
-
-# 5) Listado Admin (búsqueda + paginación)
-
-Rama: feature/admin-profiles-list
-
-Objetivo
-
-Como admin, listar todos los perfiles con búsqueda y paginación.
-
-Alcance
-
-Página Volt: /admin/perfiles
-
-Grid con: foto, apellido/nombre, DNI, comisión.
-
-Filtros: búsqueda por apellido|nombre|dni|comision|carrera.
-
-Paginación (12/24 por página).
-
-Links rápidos: WhatsApp y redes si existen.
-
-Criterios de aceptación
-
-Solo admin accede.
-
-Búsqueda parcial funciona.
-
-Paginación estable.
-
-Rutas
-
-/admin/perfiles bajo admin.
-
-Seguridad
-
-Policy@viewAny y middleware admin.
-
-Tests
-
-Admin ve listado; user 403.
-
-Búsqueda devuelve resultados esperados.
