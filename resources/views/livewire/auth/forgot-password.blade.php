@@ -2,8 +2,8 @@
 
     {{-- Encabezado institucional --}}
     <x-auth-header
-    title="¿Olvidaste tu contraseña?"
-    description="Ingresá tu email institucional y te enviaremos un enlace para restablecerla." />
+    title=""
+    description="" />
 
 
     {{-- Título --}}
@@ -18,7 +18,7 @@
     <x-auth-session-status class="text-center" :status="session('status')" />
 
     {{-- Formulario --}}
-    <form wire:submit="sendResetLink" class="space-y-6">
+    <form wire:submit="sendPasswordResetLink" class="space-y-6">
 
         {{-- Email --}}
         <x-auth.input label="Email Institucional"

@@ -2,8 +2,8 @@
 
     {{-- Encabezado institucional --}}
     <x-auth-header
-    title="Confirmar contraseña"
-    description="Por seguridad, confirmá tu contraseña antes de continuar." />
+    title=""
+    description="" />
 
     {{-- Título --}}
     <div class="text-center space-y-1">

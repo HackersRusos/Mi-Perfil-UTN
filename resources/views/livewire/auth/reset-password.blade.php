@@ -2,8 +2,8 @@
 
     {{-- Encabezado institucional --}}
     <x-auth-header
-    title="Restablecer contraseña"
-    description="Ingresá tu nueva contraseña para continuar." />
+    title=""
+    description="" />
 
 
     {{-- Título --}}

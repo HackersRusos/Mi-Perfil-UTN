@@ -52,32 +52,49 @@ class AuthForm extends Component
         $this->showPasswordConfirm = ! $this->showPasswordConfirm;
     }
 
-    /** Login */
+   /** Login */
     public function login(): void
     {
         $this->validate([
             'email'    => ['required', 'email'],
             'password' => ['required'],
         ]);
-
+    
         $this->ensureIsNotRateLimited();
-
-        if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
-            RateLimiter::hit($this->throttleKey());
-
+    
+        $maxAttempts = 3;
+        $attempts = RateLimiter::attempts($this->throttleKey());
+    
+        // Si ya alcanzó el máximo → mensaje de bloqueo con tiempo de espera
+        if ($attempts >= $maxAttempts) {
             throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
+                'email' => __('auth.too_many_attempts', [
+                    'seconds' => RateLimiter::availableIn($this->throttleKey()),
+                ]),
             ]);
         }
-
+    
+        $remaining = $maxAttempts - $attempts;
+    
+        // Si credenciales inválidas → restar intentos
+        if (! Auth::attempt(['email' => strtolower(trim($this->email)), 'password' => $this->password], $this->remember)) {
+            RateLimiter::hit($this->throttleKey());
+    
+            throw ValidationException::withMessages([
+                'email' => __('auth.invalid_credentials', ['remaining' => $remaining]),
+            ]);
+        }
+    
+        // Login exitoso → limpiar intentos, regenerar sesión y redirigir
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
-
+    
         $u = Auth::user();
         $to = $this->redirectToRoleDashboard($u);
-
+    
         $this->redirect($to, navigate: false);
     }
+
 
     /** Registro */
     public function register(): void
