@@ -2,8 +2,8 @@
 
     {{-- Encabezado institucional --}}
     <x-auth-header
-    title="Verificá tu correo"
-    description="Te enviamos un enlace de verificación a tu email. Si no lo recibiste, podés solicitar otro." />
+    title=""
+    description="" />
 
 
     {{-- Título --}}

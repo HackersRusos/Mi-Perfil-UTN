@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Notifications\CustomResetPassword;
 
 class User extends Authenticatable
 {
@@ -86,5 +87,10 @@ class User extends Authenticatable
             if ($name === $r || $id === $r) return true;
         }
         return false;
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomResetPassword($token));
     }
 }

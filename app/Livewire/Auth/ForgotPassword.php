@@ -4,6 +4,7 @@ namespace App\Livewire\Auth;
 
 use Illuminate\Support\Facades\Password;
 use Livewire\Component;
+use Illuminate\Validation\ValidationException;
 
 class ForgotPassword extends Component
 {
@@ -12,12 +13,20 @@ class ForgotPassword extends Component
     public function sendPasswordResetLink(): void
     {
         $this->validate([
-            'email' => ['required', 'string', 'email'],
+            'email' => ['required', 'email', 'exists:users,email'],
         ]);
-
-        Password::sendResetLink(['email' => $this->email]);
-
-        session()->flash('status', __('A reset link will be sent if the account exists.'));
+    
+        $status = Password::sendResetLink([
+            'email' => $this->email,
+        ]);
+    
+        if ($status === Password::RESET_LINK_SENT) {
+            session()->flash('status', __($status));
+             // 🔹 Redirige al login después de enviar correctamente
+             $this->redirectRoute('login', navigate: true);
+        } else {
+            $this->addError('email', __($status));
+        }
     }
 
     public function render()
